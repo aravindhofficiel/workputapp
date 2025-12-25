@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import "./css/home.css";
+import "../components/css/Home.css";
+
 
 export default function Home() {
   const navigate = useNavigate();

@@ -1,161 +1,138 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import "./css/Home.css";
 
-
 export default function Home() {
-  const navigate = useNavigate();
-
-  /* ===============================
-     SPEECH (VOICE COUNTDOWN)
-  ================================ */
-  const speak = (text) => {
-    if (!window.speechSynthesis) return;
-
-    window.speechSynthesis.cancel(); // stop previous speech
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    utterance.volume = 1;
-    window.speechSynthesis.speak(utterance);
-  };
-
-  /* ===============================
-     WORKOUT STATE
-  ================================ */
+  // ----------------------------
+  // WORKOUT STATE (1 MIN DEFAULT)
+  // ----------------------------
   const [workouts, setWorkouts] = useState([
-    { id: 1, name: "Full Body Workout", minutes: 20 },
+    { id: 1, name: "Workout", minutes: 1 },
   ]);
+
   const [selectedWorkout, setSelectedWorkout] = useState(workouts[0]);
-
-  /* ===============================
-     ADD WORKOUT FORM
-  ================================ */
-  const [newWorkout, setNewWorkout] = useState("");
-  const [newTime, setNewTime] = useState(10);
-
-  /* ===============================
-     TIMER STATE
-  ================================ */
+  const [timeLeft, setTimeLeft] = useState(selectedWorkout.minutes * 60);
   const [isRunning, setIsRunning] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(
-    selectedWorkout.minutes * 60
-  );
 
-  /* ===============================
-     RESET TIMER WHEN WORKOUT CHANGES
-  ================================ */
-  useEffect(() => {
-    setIsRunning(false);
-    setTimeLeft(selectedWorkout.minutes * 60);
-  }, [selectedWorkout]);
+  // Add workout inputs
+  const [newName, setNewName] = useState("");
+  const [newTime, setNewTime] = useState(1);
 
-  /* ===============================
-     TIMER + VOICE COUNTDOWN
-  ================================ */
+  // ----------------------------
+  // TIMER EFFECT
+  // ----------------------------
   useEffect(() => {
     if (!isRunning) return;
 
-    // 🔊 Countdown voice
-    if (timeLeft === 3) speak("Three");
-    if (timeLeft === 2) speak("Two");
-    if (timeLeft === 1) speak("One");
-
-    // 🔔 Finish voice
-    if (timeLeft === 0) {
+    if (timeLeft <= 0) {
       setIsRunning(false);
-      // speak("Workout complete");
       return;
     }
 
     const interval = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
+      setTimeLeft((t) => t - 1);
     }, 1000);
 
     return () => clearInterval(interval);
   }, [isRunning, timeLeft]);
 
-  /* ===============================
-     FORMAT TIME
-  ================================ */
-  const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
-  const seconds = String(timeLeft % 60).padStart(2, "0");
+  // ----------------------------
+  // RESET TIMER WHEN WORKOUT CHANGES
+  // ----------------------------
+  useEffect(() => {
+    setIsRunning(false);
+    setTimeLeft(selectedWorkout.minutes * 60);
+  }, [selectedWorkout]);
 
-  /* ===============================
-     ADD WORKOUT
-  ================================ */
+  // ----------------------------
+  // OPTIONAL COUNTDOWN VOICE (3,2,1)
+  // ----------------------------
+  useEffect(() => {
+    if (timeLeft === 3) speak("Three");
+    if (timeLeft === 2) speak("Two");
+    if (timeLeft === 1) speak("One");
+  }, [timeLeft]);
+
+  const speak = (text) => {
+    const msg = new SpeechSynthesisUtterance(text);
+    msg.rate = 1;
+    msg.pitch = 1;
+    window.speechSynthesis.speak(msg);
+  };
+
+  // ----------------------------
+  // HELPERS
+  // ----------------------------
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, "0");
+    const s = (seconds % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+  };
+
+  const progress =
+    440 - (timeLeft / (selectedWorkout.minutes * 60)) * 440;
+
+  // ----------------------------
+  // ADD WORKOUT
+  // ----------------------------
   const addWorkout = () => {
-    if (!newWorkout || newTime <= 0) return;
+    if (!newName || newTime <= 0) return;
 
-    const workout = {
+    const newWorkout = {
       id: Date.now(),
-      name: newWorkout,
+      name: newName,
       minutes: newTime,
     };
 
-    setWorkouts((prev) => [...prev, workout]);
-    setSelectedWorkout(workout);
-    setNewWorkout("");
-    setNewTime(10);
+    setWorkouts([...workouts, newWorkout]);
+    setSelectedWorkout(newWorkout);
+    setNewName("");
+    setNewTime(1);
   };
 
-  /* ===============================
-     CIRCULAR PROGRESS
-  ================================ */
-  const TOTAL_SECONDS = selectedWorkout.minutes * 60;
-  const CIRCUMFERENCE = 440;
-  const progressOffset =
-    CIRCUMFERENCE -
-    (CIRCUMFERENCE * timeLeft) / TOTAL_SECONDS;
-
+  // ----------------------------
+  // UI
+  // ----------------------------
   return (
-    
     <div className="home">
-      {/* ================= HEADER ================= */}
+      {/* HEADER */}
       <header className="home-header">
-        <h1 className="title">🏠Home Workout  </h1>
-        <p className="subtitle">
-          Choose workout · Set time · Train
-        </p>
+        <h1 className="title">Workout Timer</h1>
+        <p className="subtitle">Minimal · Focused · 1-Minute Sets</p>
       </header>
 
-      {/* ================= MAIN ================= */}
       <main className="home-main">
         {/* TIMER CARD */}
         <section className="timer-card">
           <h2>{selectedWorkout.name}</h2>
 
-          {/* CIRCULAR TIMER */}
           <div className="progress-wrapper">
             <svg className="progress-ring" width="160" height="160">
               <circle
                 className="progress-ring__bg"
+                r="70"
                 cx="80"
                 cy="80"
-                r="70"
               />
               <circle
                 className="progress-ring__progress"
+                r="70"
                 cx="80"
                 cy="80"
-                r="70"
-                style={{ strokeDashoffset: progressOffset }}
+                style={{ strokeDashoffset: progress }}
               />
             </svg>
 
             <div className="progress-time">
-              {minutes}:{seconds}
+              {formatTime(timeLeft)}
             </div>
           </div>
 
-          {/* CONTROLS */}
           <div className="timer-controls">
             <button
               className="btn primary"
-              onClick={() => {
-                // speak("Workout started");
-                setIsRunning((p) => !p);
-              }}
+              onClick={() => setIsRunning((p) => !p)}
             >
               {isRunning ? "⏸ Pause" : "▶ Start"}
             </button>
@@ -165,7 +142,6 @@ export default function Home() {
               onClick={() => {
                 setIsRunning(false);
                 setTimeLeft(selectedWorkout.minutes * 60);
-                speak("Reset");
               }}
             >
               🔁 Reset
@@ -180,8 +156,8 @@ export default function Home() {
           <input
             type="text"
             placeholder="Workout name"
-            value={newWorkout}
-            onChange={(e) => setNewWorkout(e.target.value)}
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
           />
 
           <input
@@ -193,19 +169,20 @@ export default function Home() {
           />
 
           <button className="btn primary full" onClick={addWorkout}>
-            ➕ Add Workout
+            Add
           </button>
         </section>
 
         {/* WORKOUT LIST */}
         <section className="workout-list">
-          <h3>Your Workouts</h3>
+          <h3>Workouts</h3>
 
           {workouts.map((w) => (
             <div
               key={w.id}
-              className={`workout-item ${selectedWorkout.id === w.id ? "active" : ""
-                }`}
+              className={`workout-item ${
+                w.id === selectedWorkout.id ? "active" : ""
+              }`}
               onClick={() => setSelectedWorkout(w)}
             >
               <span>{w.name}</span>
@@ -214,16 +191,6 @@ export default function Home() {
           ))}
         </section>
       </main>
-
-      {/* ================= FOOTER ================= */}
-      <footer className="home-footer">
-        <button
-          className="next-page-btn"
-          onClick={() => navigate("/workouts")}
-        >
-          →
-        </button>
-      </footer>
     </div>
   );
 }

@@ -64,7 +64,7 @@ export default function Home() {
     // 🔔 Finish voice
     if (timeLeft === 0) {
       setIsRunning(false);
-      speak("Workout complete");
+      // speak("Workout complete");
       return;
     }
 
@@ -152,7 +152,7 @@ export default function Home() {
             <button
               className="btn primary"
               onClick={() => {
-                speak("Workout started");
+                // speak("Workout started");
                 setIsRunning((p) => !p);
               }}
             >

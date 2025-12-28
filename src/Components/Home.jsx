@@ -113,7 +113,7 @@ export default function Home() {
     <div className="home">
       {/* ================= HEADER ================= */}
       <header className="home-header">
-        <h1 className="title">🏠 </h1>
+        <h1 className="title">🏠Home Workout  </h1>
         <p className="subtitle">
           <div style={{ background: "red", padding: "40px", color: "#fff" }}>
     JSX TEST — IF YOU SEE THIS, FILE IS USED

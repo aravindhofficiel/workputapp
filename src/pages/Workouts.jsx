@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "../components/css/Workouts.css";
+import "../Components/css/Workouts.css";
 
 
 export default function Workouts() {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import "../components/css/Home.css";
+import "./css/Home.css";
 
 
 export default function Home() {
@@ -203,9 +203,8 @@ export default function Home() {
           {workouts.map((w) => (
             <div
               key={w.id}
-              className={`workout-item ${
-                selectedWorkout.id === w.id ? "active" : ""
-              }`}
+              className={`workout-item ${selectedWorkout.id === w.id ? "active" : ""
+                }`}
               onClick={() => setSelectedWorkout(w)}
             >
               <span>{w.name}</span>

@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./components/Home.jsx";
+import Home from "./Components/Home.jsx";
 import Workouts from "./pages/Workouts.jsx";
 
 export default function App() {

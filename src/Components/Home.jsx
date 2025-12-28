@@ -109,6 +109,9 @@ export default function Home() {
     (CIRCUMFERENCE * timeLeft) / TOTAL_SECONDS;
 
   return (
+    <div style={{ background: "red", padding: "40px", color: "#fff" }}>
+    JSX TEST — IF YOU SEE THIS, FILE IS USED
+  </div>
     <div className="home">
       {/* ================= HEADER ================= */}
       <header className="home-header">

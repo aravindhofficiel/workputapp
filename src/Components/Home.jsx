@@ -115,9 +115,6 @@ export default function Home() {
       <header className="home-header">
         <h1 className="title">🏠Home Workout  </h1>
         <p className="subtitle">
-          <div style={{ background: "red", padding: "40px", color: "#fff" }}>
-    JSX TEST — IF YOU SEE THIS, FILE IS USED
-  </div>
           Choose workout · Set time · Train
         </p>
       </header>

@@ -109,14 +109,15 @@ export default function Home() {
     (CIRCUMFERENCE * timeLeft) / TOTAL_SECONDS;
 
   return (
-    <div style={{ background: "red", padding: "40px", color: "#fff" }}>
-    JSX TEST — IF YOU SEE THIS, FILE IS USED
-  </div>
+    
     <div className="home">
       {/* ================= HEADER ================= */}
       <header className="home-header">
         <h1 className="title">🏠 </h1>
         <p className="subtitle">
+          <div style={{ background: "red", padding: "40px", color: "#fff" }}>
+    JSX TEST — IF YOU SEE THIS, FILE IS USED
+  </div>
           Choose workout · Set time · Train
         </p>
       </header>

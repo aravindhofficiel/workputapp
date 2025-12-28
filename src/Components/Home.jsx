@@ -112,7 +112,7 @@ export default function Home() {
     <div className="home">
       {/* ================= HEADER ================= */}
       <header className="home-header">
-        <h1 className="title">🏠 Home Workout</h1>
+        <h1 className="title">🏠 Home for  Workout</h1>
         <p className="subtitle">
           Choose workout · Set time · Train
         </p>

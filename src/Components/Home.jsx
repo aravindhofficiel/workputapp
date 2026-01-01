@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext.jsx";
 import "./css/Home.css";
 
 export default function Home() {
+  const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+
   // ----------------------------
   // WORKOUT STATE (1 MIN DEFAULT)
   // ----------------------------
@@ -73,6 +78,10 @@ export default function Home() {
   const progress =
     440 - (timeLeft / (selectedWorkout.minutes * 60)) * 440;
 
+  const progressPercent = Math.round(
+    ((selectedWorkout.minutes * 60 - timeLeft) / (selectedWorkout.minutes * 60)) * 100
+  );
+
   // ----------------------------
   // ADD WORKOUT
   // ----------------------------
@@ -92,103 +101,176 @@ export default function Home() {
   };
 
   // ----------------------------
+  // DELETE WORKOUT
+  // ----------------------------
+  const deleteWorkout = (id, e) => {
+    e.stopPropagation();
+    if (workouts.length === 1) return;
+    
+    const updatedWorkouts = workouts.filter((w) => w.id !== id);
+    setWorkouts(updatedWorkouts);
+    
+    if (selectedWorkout.id === id) {
+      setSelectedWorkout(updatedWorkouts[0]);
+    }
+  };
+
+  // ----------------------------
   // UI
   // ----------------------------
   return (
-    <div className="home">
+    <div className="home-advanced">
       {/* HEADER */}
-      <header className="home-header">
-        <h1 className="title">Workout Timer</h1>
-        <p className="subtitle">Minimal · Focused · 1-Minute Sets</p>
+      <header className="home-header-advanced">
+        <div className="header-content">
+          <div className="header-text">
+            <h1 className="title-advanced">Workout Timer</h1>
+            <p className="subtitle-advanced">Minimal · Focused · 1-Minute Sets</p>
+          </div>
+          <button 
+            className="theme-toggle-advanced" 
+            onClick={toggleTheme} 
+            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            aria-label="Toggle theme"
+          >
+            <span className="theme-icon">{theme === "light" ? "🌙" : "☀️"}</span>
+          </button>
+        </div>
       </header>
 
-      <main className="home-main">
-        {/* TIMER CARD */}
-        <section className="timer-card">
-          <h2>{selectedWorkout.name}</h2>
+      <main className="home-main-advanced">
+        {/* TIMER CARD - HERO SECTION */}
+        <section className="timer-card-advanced">
+          <div className="timer-header">
+            <h2 className="timer-workout-name">{selectedWorkout.name}</h2>
+            <span className="timer-duration">{selectedWorkout.minutes} min</span>
+          </div>
 
-          <div className="progress-wrapper">
-            <svg className="progress-ring" width="160" height="160">
-              <circle
-                className="progress-ring__bg"
-                r="70"
-                cx="80"
-                cy="80"
-              />
-              <circle
-                className="progress-ring__progress"
-                r="70"
-                cx="80"
-                cy="80"
-                style={{ strokeDashoffset: progress }}
-              />
-            </svg>
-
-            <div className="progress-time">
-              {formatTime(timeLeft)}
+          <div className="progress-wrapper-advanced">
+            <div className="progress-container">
+              <svg className="progress-ring-advanced" viewBox="0 0 160 160">
+                <circle
+                  className="progress-ring__bg-advanced"
+                  r="70"
+                  cx="80"
+                  cy="80"
+                />
+                <circle
+                  className="progress-ring__progress-advanced"
+                  r="70"
+                  cx="80"
+                  cy="80"
+                  style={{ strokeDashoffset: progress }}
+                />
+              </svg>
+              <div className="progress-time-advanced">
+                <span className="time-display">{formatTime(timeLeft)}</span>
+                <span className="progress-percent">{progressPercent}%</span>
+              </div>
             </div>
           </div>
 
-          <div className="timer-controls">
+          <div className="timer-controls-advanced">
             <button
-              className="btn primary"
+              className={`btn-control btn-primary-advanced ${isRunning ? 'btn-pause' : 'btn-start'}`}
               onClick={() => setIsRunning((p) => !p)}
             >
-              {isRunning ? "⏸ Pause" : "▶ Start"}
+              <span className="btn-icon">{isRunning ? "⏸" : "▶"}</span>
+              <span>{isRunning ? "Pause" : "Start"}</span>
             </button>
 
             <button
-              className="btn secondary"
+              className="btn-control btn-secondary-advanced"
               onClick={() => {
                 setIsRunning(false);
                 setTimeLeft(selectedWorkout.minutes * 60);
               }}
             >
-              🔁 Reset
+              <span className="btn-icon">🔁</span>
+              <span>Reset</span>
             </button>
           </div>
         </section>
 
-        {/* ADD WORKOUT */}
-        <section className="add-workout">
-          <h3>Add Workout</h3>
-
-          <input
-            type="text"
-            placeholder="Workout name"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-          />
-
-          <input
-            type="number"
-            min="1"
-            placeholder="Minutes"
-            value={newTime}
-            onChange={(e) => setNewTime(Number(e.target.value))}
-          />
-
-          <button className="btn primary full" onClick={addWorkout}>
-            Add
-          </button>
-        </section>
-
-        {/* WORKOUT LIST */}
-        <section className="workout-list">
-          <h3>Workouts</h3>
-
-          {workouts.map((w) => (
-            <div
-              key={w.id}
-              className={`workout-item ${
-                w.id === selectedWorkout.id ? "active" : ""
-              }`}
-              onClick={() => setSelectedWorkout(w)}
-            >
-              <span>{w.name}</span>
-              <span>{w.minutes} min</span>
+        {/* TWO COLUMN LAYOUT */}
+        <div className="content-grid-advanced">
+          {/* ADD WORKOUT SECTION */}
+          <section className="add-workout-advanced">
+            <div className="section-header">
+              <h3 className="section-title">Add Workout</h3>
             </div>
-          ))}
+            
+            <div className="input-group-advanced">
+              <input
+                type="text"
+                placeholder="Workout name"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                className="input-advanced"
+              />
+              <input
+                type="number"
+                min="1"
+                placeholder="Minutes"
+                value={newTime}
+                onChange={(e) => setNewTime(Number(e.target.value))}
+                className="input-advanced"
+              />
+              <button className="btn-add-advanced" onClick={addWorkout}>
+                <span className="btn-add-icon">+</span>
+                Add Workout
+              </button>
+            </div>
+          </section>
+
+          {/* WORKOUT LIST SECTION */}
+          <section className="workout-list-advanced">
+            <div className="section-header">
+              <h3 className="section-title">My Workouts</h3>
+              <span className="workout-count">{workouts.length}</span>
+            </div>
+
+            <div className="workout-items-container">
+              {workouts.map((w) => (
+                <div
+                  key={w.id}
+                  className={`workout-item-advanced ${
+                    w.id === selectedWorkout.id ? "active" : ""
+                  }`}
+                  onClick={() => setSelectedWorkout(w)}
+                >
+                  <div className="workout-item-content">
+                    <span className="workout-name">{w.name}</span>
+                    <span className="workout-time">{w.minutes} min</span>
+                  </div>
+                  {workouts.length > 1 && (
+                    <button
+                      className="workout-delete-btn"
+                      onClick={(e) => deleteWorkout(w.id, e)}
+                      aria-label="Delete workout"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        {/* QUICK ACTION SECTION */}
+        <section className="quick-actions-advanced">
+          <button
+            className="btn-quick-action"
+            onClick={() => navigate("/track-workout")}
+          >
+            <span className="quick-action-icon">📝</span>
+            <div className="quick-action-content">
+              <span className="quick-action-title">Track Workout</span>
+              <span className="quick-action-subtitle">Log sets and reps</span>
+            </div>
+            <span className="quick-action-arrow">→</span>
+          </button>
         </section>
       </main>
     </div>
